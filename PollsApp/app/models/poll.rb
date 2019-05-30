@@ -10,6 +10,8 @@
 #
 
 class Poll < ApplicationRecord
+
+  validates :title, uniqueness: true
   
   belongs_to :author,
     primary_key: :id,

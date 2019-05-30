@@ -21,4 +21,22 @@ class Response < ApplicationRecord
     foreign_key: :answer_choice_id,
     class_name: :AnswerChoice
 
+  has_one :question,
+    through: :answer_choice,
+    source: :question
+
+  def sibling_responses
+    self
+    .question
+    .responses
+    .where.not(id: self.id)
+
+    # self
+    # .question
+    # .responses
+    # .where.not('responses.id = ?', self.id)
+  end
+
+  
+
 end
