@@ -89,7 +89,4 @@ def movie_names_before_1940
   Movie
     .where('yr < ?', 1940)
     .pluck(:title)
-  
-
-
 end
