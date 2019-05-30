@@ -11,6 +11,8 @@
 
 class Response < ApplicationRecord
 
+  validate :not_duplicate_response
+
   belongs_to :respondent,
     primary_key: :id,
     foreign_key: :user_id,
@@ -37,6 +39,20 @@ class Response < ApplicationRecord
     # .where.not('responses.id = ?', self.id)
   end
 
-  
+  def respondent_already_answered?
+    sibling_responses.any? { |response| response.user_id == self.user_id }
+  end
+
+  private
+  def not_duplicate_response
+    if respondent_already_answered?
+      errors[:user_id] << 'has already answered this question'
+    end
+  end
 
 end
+
+#  user_id: 61,
+#  answer_choice_id: 641,
+
+#  Response.new(user_id: 61, answer_choice_id: 641)
