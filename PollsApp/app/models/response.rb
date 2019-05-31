@@ -12,6 +12,7 @@
 class Response < ApplicationRecord
 
   validate :not_duplicate_response
+  validate :not_respond_own_poll
 
   belongs_to :respondent,
     primary_key: :id,
@@ -25,7 +26,7 @@ class Response < ApplicationRecord
 
   has_one :question,
     through: :answer_choice,
-    source: :question
+    source: :question  
 
   def sibling_responses
     self
@@ -43,10 +44,21 @@ class Response < ApplicationRecord
     sibling_responses.any? { |response| response.user_id == self.user_id }
   end
 
+  def poll_author_id
+    self.question.poll.user_id
+  end
+
   private
   def not_duplicate_response
     if respondent_already_answered?
       errors[:user_id] << 'has already answered this question'
+    end
+  end
+
+  def not_respond_own_poll
+    creator_id = self.question.poll.user_id
+    if creator_id == self.user_id
+      errors[:user_id] << 'cannot answer own poll'
     end
   end
 
@@ -56,3 +68,6 @@ end
 #  answer_choice_id: 641,
 
 #  Response.new(user_id: 61, answer_choice_id: 641)
+
+
+# Response.last author_id: 70, question_id: 320, aci: 960
